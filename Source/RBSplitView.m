@@ -31,7 +31,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 // These class methods get and set the cursor used for each type.
 // Pass in nil to reset to the default cursor for that type.
 + (NSCursor*)cursor:(RBSVCursorType)type {
-	if ((type>=0)&&(type<RBSVCursorTypeCount)) {
+	if (type<RBSVCursorTypeCount) {
 		NSCursor* result = cursors[type];
 		if (result) {
 			return result;
@@ -53,7 +53,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 }
 
 + (void)setCursor:(RBSVCursorType)type toCursor:(NSCursor*)cursor {
-	if ((type>=0)&&(type<RBSVCursorTypeCount)) {
+	if (type<RBSVCursorTypeCount) {
 		[cursors[type] release];
 		cursors[type] = [cursor retain];
 	}
@@ -111,6 +111,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 // You must call restoreState explicity at least once before saveState will begin working.
 - (BOOL)saveState:(BOOL)recurse {
 // Saving the state is also disabled while dragging.
+	[self invalidateRestorableState];
 	if (canSaveState&&![self isDragging]&&[autosaveName length]) {
 		[[NSUserDefaults standardUserDefaults] setObject:[self stringWithSavedState] forKey:[[self class] defaultsKeyForName:autosaveName isHorizontal:[self isHorizontal]]];
 		if (recurse) {
@@ -241,6 +242,16 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 		}
 	}
 	return NO;
+}
+
+// interface for 10.7 state restoration
+- (void)encodeRestorableStateWithCoder:(NSCoder*)coder {
+	[coder encodeObject:[self stringWithSavedState] forKey:@"RBSplitView"];
+}
+
+// interface for 10.7 state restoration
+- (void)restoreStateWithCoder:(NSCoder*)coder {
+	[self setStateFromString:[coder decodeObjectForKey:@"RBSplitView"]];
 }
 
 // This is the designated initializer for creating RBSplitViews programmatically. You can set the
