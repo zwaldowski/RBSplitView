@@ -246,11 +246,13 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 
 // interface for 10.7 state restoration
 - (void)encodeRestorableStateWithCoder:(NSCoder*)coder {
+	[super encodeRestorableStateWithCoder:coder];
 	[coder encodeObject:[self stringWithSavedState] forKey:@"RBSplitView"];
 }
 
 // interface for 10.7 state restoration
 - (void)restoreStateWithCoder:(NSCoder*)coder {
+	[super restoreStateWithCoder:coder];
 	[self setStateFromString:[coder decodeObjectForKey:@"RBSplitView"]];
 }
 
