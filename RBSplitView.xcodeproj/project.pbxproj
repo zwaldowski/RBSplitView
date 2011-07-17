@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 45;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXAggregateTarget section */
@@ -729,7 +729,7 @@
 				ORGANIZATIONNAME = "Rainer Brockerhoff";
 			};
 			buildConfigurationList = D50F206F08A01A630073A261 /* Build configuration list for PBXProject "RBSplitView" */;
-			compatibilityVersion = "Xcode 3.1";
+			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
 			knownRegions = (
