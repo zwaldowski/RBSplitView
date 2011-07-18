@@ -1344,14 +1344,24 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 			}
 			firstLeading = [subviews objectAtIndex:--k];
 		}
+		RBSplitSubview* firstTrailing = trailing;
+		k = indx+1;
+		while (![firstTrailing canExpand]) {
+			if (k==subcount) {
+				firstTrailing = trailing;
+				break;
+			}
+			firstTrailing = [subviews objectAtIndex:++k];
+		}
+		
 		if (isInScrollView) {
 			trailing = nil;
 		}
 // If the trailing subview is collapsed, it might be expanded if some conditions are met.
-		if ([trailing isCollapsed]) {
-			[self RB___tryToExpandTrailing:trailing leading:firstLeading delta:delta];
+		if ([firstTrailing isCollapsed]) {
+			[self RB___tryToExpandTrailing:firstTrailing leading:firstLeading delta:delta];
 		} else {
-			[self RB___tryToShortenLeading:firstLeading divider:indx trailing:trailing delta:delta always:YES];
+			[self RB___tryToShortenLeading:firstLeading divider:indx trailing:firstTrailing delta:delta always:YES];
 		}
 	} else if (delta>0.0) {
 // Positive delta means the mouse is being moved right or downwards.
@@ -1369,12 +1379,22 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 				firstTrailing = [subviews objectAtIndex:k];
 			}
 		}
+		RBSplitSubview* firstLeading = leading;
+		k = indx;
+		while (![firstLeading canExpand]) {
+			if (k==0) {
+				firstLeading = leading;
+				break;
+			}
+			firstLeading = [subviews objectAtIndex:--k];
+		}
+		
 // If the leading subview is collapsed, it might be expanded if some conditions are met.
-		if ([leading isCollapsed]) {
-			[self RB___tryToExpandLeading:leading divider:indx trailing:firstTrailing delta:delta];
+		if ([firstLeading isCollapsed]) {
+			[self RB___tryToExpandLeading:firstLeading divider:indx trailing:firstTrailing delta:delta];
 		} else {
 // The leading subview is not collapsed, so we try to shorten or even collapse it
-			[self RB___tryToShortenTrailing:firstTrailing divider:indx leading:leading delta:delta always:YES];
+			[self RB___tryToShortenTrailing:firstTrailing divider:indx leading:firstLeading delta:delta always:YES];
 		}
 	}
 }
