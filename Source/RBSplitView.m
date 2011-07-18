@@ -108,37 +108,13 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 
 // Saves the current state of the subviews if there's a valid autosave name set. If the argument
 // is YES, it's then also called recursively for nested RBSplitViews. Returns YES if successful.
-// You must call restoreState explicity at least once before saveState will begin working.
 - (BOOL)saveState:(BOOL)recurse {
 // Saving the state is also disabled while dragging.
 	[self invalidateRestorableState];
-	if (canSaveState&&![self isDragging]&&[autosaveName length]) {
-		[[NSUserDefaults standardUserDefaults] setObject:[self stringWithSavedState] forKey:[[self class] defaultsKeyForName:autosaveName isHorizontal:[self isHorizontal]]];
-		if (recurse) {
-			for (RBSplitSubview* sub in [self subviews]){
-				[[sub asSplitView] saveState:YES];
-			}
-		}
-		return YES;
-	}
-	return NO;
-}
-
-// Restores the saved state of the subviews if there's a valid autosave name set. If the argument
-// is YES, it's also called recursively for nested RBSplitViews. Returns YES if successful.
-// It's good policy to call adjustSubviews immediately after calling restoreState.
-- (BOOL)restoreState:(BOOL)recurse {
-	BOOL result = NO;
-	if ([autosaveName length]) {
-		result = [self setStateFromString:[[NSUserDefaults standardUserDefaults] stringForKey:[[self class] defaultsKeyForName:autosaveName isHorizontal:[self isHorizontal]]]];
-		if (result&&recurse) {
-			for (RBSplitSubview* sub in [self subviews]){
-				[[sub asSplitView] restoreState:YES];
-			}
-		}
-	}
-	canSaveState = YES;
-	return result;
+	if (recurse)
+		for (RBSplitSubview* sub in [self subviews])
+			[[sub asSplitView] saveState:YES];
+	return YES;
 }
 
 // Returns an array with complete state information for the receiver and all subviews, taking
@@ -253,7 +229,9 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 // interface for 10.7 state restoration
 - (void)restoreStateWithCoder:(NSCoder*)coder {
 	[super restoreStateWithCoder:coder];
-	[self setStateFromString:[coder decodeObjectForKey:@"RBSplitView"]];
+	NSString *state = [coder decodeObjectForKey:@"RBSplitView"];
+	if(state)
+		[self setStateFromString:state];
 }
 
 // This is the designated initializer for creating RBSplitViews programmatically. You can set the
@@ -407,7 +385,6 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 // but verticality is used for setting to conform to the NSSplitView convention.
 // For a nested RBSplitView, orientation is perpendicular to the containing RBSplitView, and
 // setting it has no effect.
-// After changing the orientation you may want to restore the state with restoreState:.
 - (BOOL)isHorizontal {
 	RBSplitView* sv = [self splitView];
 	return sv?[sv isVertical]:isHorizontal;
@@ -750,16 +727,6 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 		return YES;
 	}
 	return [super needsDisplay];
-}
-
-// We implement awakeFromNib to restore the state. This works if an autosaveName is set in the nib.
-- (void)awakeFromNib {
-	if ([RBSplitSubview instancesRespondToSelector:@selector(awakeFromNib)]) {
-		[super awakeFromNib];
-	}
-	if (![self splitView]) {
-		[self restoreState:YES];
-	}
 }
 
 // We check if subviews must be adjusted before redisplaying programmatically.

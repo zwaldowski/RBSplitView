@@ -59,11 +59,6 @@ typedef enum {
 // is YES, it's then also called recursively for nested RBSplitViews. Returns YES if successful.
 - (BOOL)saveState:(BOOL)recurse;
 
-// Restores the saved state of the subviews if there's a valid autosave name set. If the argument
-// is YES, it's first called recursively for nested RBSplitViews. Returns YES if successful.
-// You need to call adjustSubviews after calling this.
-- (BOOL)restoreState:(BOOL)recurse;
-
 // Returns a string encoding the current state of all direct subviews. Does not check for nesting.
 - (NSString*)stringWithSavedState;
 
