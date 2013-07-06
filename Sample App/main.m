@@ -9,7 +9,22 @@
 //	Some Rights Reserved under the Creative Commons Attribution License, version 2.5, and/or the MIT License.
 //
 
-#import "main.h"
+#import <Cocoa/Cocoa.h>
+#import "RBSplitView.h"
+
+@interface MyAppDelegate : NSObject {
+	IBOutlet RBSplitSubview* firstSplit;
+	IBOutlet RBSplitView* secondSplit;
+	IBOutlet RBSplitView* thirdSplit;
+	IBOutlet RBSplitView* lowerSplit;
+	IBOutlet RBSplitView* mySplitView;
+	IBOutlet NSButton* myButton;
+	IBOutlet NSView* dragView;
+	IBOutlet RBSplitSubview* nestedSplit;
+}
+@end
+
+#define DIM(x) (((CGFloat*)&(x))[ishor])
 
 // Number of pixels to widen the lowerSplit view's divider for dragging/cursor
 #define WIDEN (8)
