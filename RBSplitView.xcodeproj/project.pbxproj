@@ -197,6 +197,7 @@
 		D57552A91081CB11008B2348 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				INFOPLIST_FILE = "Sample App/SampleApp-Info.plist";
 				PRODUCT_NAME = "SampleApp(Sno)";
 			};
@@ -205,6 +206,7 @@
 		D57552AA1081CB11008B2348 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_OBJC_ARC = YES;
 				INFOPLIST_FILE = "Sample App/SampleApp-Info.plist";
 				PRODUCT_NAME = "SampleApp(Sno)";
 			};

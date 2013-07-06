@@ -58,8 +58,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 
 + (void)setCursor:(RBSVCursorType)type toCursor:(NSCursor*)cursor {
 	if (type &&(type<RBSVCursorTypeCount)) {
-		[cursors[type] release];
-		cursors[type] = [cursor retain];
+		cursors[type] = cursor;
 	}
 }
 
@@ -94,8 +93,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 		aString = @"";
 	}
 	[RBSplitView removeStateUsingName:autosaveName];
-	[autosaveName autorelease];
-	autosaveName = [aString retain];
+	autosaveName = aString;
 	if (flag) {
 		NSArray* subviews = [self subviews];
 		NSUInteger subcount = [subviews count];
@@ -261,7 +259,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 	self = [self initWithFrame:frame];
 	if (self) {
 		while (count-->0) {
-			[self addSubview:[[[RBSplitSubview alloc] initWithFrame:frame] autorelease]];
+			[self addSubview:[[RBSplitSubview alloc] initWithFrame:frame]];
 		}
 		[self setMustAdjust];
 	}
@@ -273,10 +271,6 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 	if (dividers) {
 		free(dividers);
 	}
-	[autosaveName release];
-	[divider release];
-	[background release];
-	[super dealloc];
 }
 
 // Sets and gets the coupling between the view and its containing RBSplitView (if any). Coupled
@@ -368,8 +362,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 
 - (void)setBackground:(NSColor*)color {
 	if (![self couplingSplitView]) {
-		[background autorelease];
-		background = color?([color alphaComponent]>0.0?[color retain]:nil):nil;
+		background = color?([color alphaComponent]>0.0?color:nil):nil;
 		[self setNeedsDisplay:YES];
 	}
 }
@@ -451,10 +444,9 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 
 - (void)setDivider:(NSImage*)image {
 	if (![self couplingSplitView]) {
-		[divider autorelease];
 		if ([image isFlipped]) {
 // If the image is flipped, we just retain it.
-			divider = [image retain];
+			divider = image;
 		} else {
 // if the image isn't flipped, we copy the image instead of retaining it, and flip the copy.
 			divider = [image copy];
@@ -496,7 +488,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 		[super addSubview:aView];
 	} else {
 		[aView setFrameOrigin:NSZeroPoint];
-		RBSplitSubview* sub = [[[RBSplitSubview alloc] initWithFrame:[aView frame]] autorelease];
+		RBSplitSubview* sub = [[RBSplitSubview alloc] initWithFrame:[aView frame]];
 		[aView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 		[sub addSubview:aView];
 		[super addSubview:sub];
@@ -509,7 +501,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 		[super addSubview:aView positioned:place relativeTo:otherView];
 	} else {
 		[aView setFrameOrigin:NSZeroPoint];
-		RBSplitSubview* sub = [[[RBSplitSubview alloc] initWithFrame:[aView frame]] autorelease];
+		RBSplitSubview* sub = [[RBSplitSubview alloc] initWithFrame:[aView frame]];
 		[aView setAutoresizingMask:NSViewWidthSizable|NSViewHeightSizable];
 		[sub addSubview:aView];
 		[super addSubview:sub positioned:place relativeTo:otherView];
@@ -681,40 +673,40 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 				[self RB___setDragging:YES];
 				while ((theEvent = [NSApp nextEventMatchingMask:NSLeftMouseDownMask|NSLeftMouseDraggedMask|NSLeftMouseUpMask untilDate:[NSDate distantFuture] inMode:NSEventTrackingRunLoopMode dequeue:YES])&&([theEvent type]!=NSLeftMouseUp)) {
 // Set up a local autorelease pool for the loop to prevent buildup of temporary objects.
-					NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-					NSDisableScreenUpdates();
+					@autoreleasepool {
+						NSDisableScreenUpdates();
 // Track the mouse along the main coordinate. 
-					[self RB___trackMouseEvent:theEvent from:where withBase:NSZeroPoint inDivider:i];
-					if (ldivdr!=NSNotFound) {
+						[self RB___trackMouseEvent:theEvent from:where withBase:NSZeroPoint inDivider:i];
+						if (ldivdr!=NSNotFound) {
 // Track any two-axis thumbs for the leading nested RBSplitView.
-						[leading RB___trackMouseEvent:theEvent from:[self convertPoint:lwhere toView:leading] withBase:NSZeroPoint inDivider:ldivdr];
-					}
-					if (tdivdr!=NSNotFound) {
+							[leading RB___trackMouseEvent:theEvent from:[self convertPoint:lwhere toView:leading] withBase:NSZeroPoint inDivider:ldivdr];
+						}
+						if (tdivdr!=NSNotFound) {
 // Track any two-axis thumbs for the trailing nested RBSplitView.
-						[trailing RB___trackMouseEvent:theEvent from:[self convertPoint:twhere toView:trailing] withBase:NSZeroPoint inDivider:tdivdr];
-					}
-					if (mustAdjust||[leading mustAdjust]||[trailing mustAdjust]) {
+							[trailing RB___trackMouseEvent:theEvent from:[self convertPoint:twhere toView:trailing] withBase:NSZeroPoint inDivider:tdivdr];
+						}
+						if (mustAdjust||[leading mustAdjust]||[trailing mustAdjust]) {
 // The mouse was dragged and the subviews changed, so we must redisplay, as
 // several divider rectangles may have changed.
-						RBSplitView* sv = [self splitView];
-						[sv?sv:self adjustSubviews];
-						[super display];
-						divdr = &dividers[i];
+							RBSplitView* sv = [self splitView];
+							[sv?sv:self adjustSubviews];
+							[super display];
+							divdr = &dividers[i];
 // Adjust to the new cursor coordinates.
-						DIM(where) = DIM(divdr->origin)+offset;
-						if ((ldivdr!=NSNotFound)&&![leading isCollapsed]) {
+							DIM(where) = DIM(divdr->origin)+offset;
+							if ((ldivdr!=NSNotFound)&&![leading isCollapsed]) {
 // Adjust for the leading nested RBSplitView's thumbs while it's not collapsed.
-							lrect = [leading RB___dividerRect:ldivdr relativeToView:self];
-							OTHER(lwhere) = OTHER(lrect.origin)+loffset;
-						}
-						if ((tdivdr!=NSNotFound)&&![trailing isCollapsed]) {
+								lrect = [leading RB___dividerRect:ldivdr relativeToView:self];
+								OTHER(lwhere) = OTHER(lrect.origin)+loffset;
+							}
+							if ((tdivdr!=NSNotFound)&&![trailing isCollapsed]) {
 // Adjust for the trailing nested RBSplitView's thumbs while it's not collapsed.
-							trect = [trailing RB___dividerRect:tdivdr relativeToView:self];
-							OTHER(twhere) = OTHER(trect.origin)+toffset;
+								trect = [trailing RB___dividerRect:tdivdr relativeToView:self];
+								OTHER(twhere) = OTHER(trect.origin)+toffset;
+							}
 						}
+						NSEnableScreenUpdates();
 					}
-					NSEnableScreenUpdates();
-					[pool drain];
 				}
 				[self RB___setDragging:NO];
 // Redisplay the previous cursor.
@@ -920,7 +912,7 @@ static inline CGFloat fMAX(CGFloat a,CGFloat b) {
 		dividers = NULL;
 		if (data) {
 			NSBitmapImageRep* rep = [NSBitmapImageRep imageRepWithData:data];
-			NSImage* image = [[[NSImage alloc] initWithSize:[rep size]] autorelease];
+			NSImage* image = [[NSImage alloc] initWithSize:[rep size]];
 			[image setFlipped:YES];
 			[image addRepresentation:rep];
 			[self setDivider:image];
